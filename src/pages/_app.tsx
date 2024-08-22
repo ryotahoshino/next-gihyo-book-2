@@ -1,6 +1,20 @@
-import { AppProps } from 'next/app'
-import Head from 'next/head'
-import { createGlobalStyle } from 'styled-components'
+import { AppProps } from 'next/app';
+import Head from 'next/head';
+import { createGlobalStyle, ThemeProvider } from 'styled-components';
+import { theme } from '@/themes';
+import NextImage from 'next/image';
+
+const OriginalNextImage = NextImage;
+
+Object.defineProperty(NextImage, 'default', {
+  configurable: true,
+  value: (props: any) =>
+    typeof props.src === 'string' ? (
+      <OriginalNextImage {...props} unoptimized blurDataURL={props.src} />
+    ) : (
+      <OriginalNextImage {...props} unoptimized />
+    ),
+});
 
 const GlobalStyle = createGlobalStyle`
 html,
@@ -26,7 +40,7 @@ a {
 ol, ul {
   list-style: none;
 }
-`
+`;
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
@@ -41,10 +55,12 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         <meta property="og:locale" content="ja_JP" />
         <meta property="og:type" content="website" />
       </Head>
-      <GlobalStyle />
-      <Component {...pageProps} />
+      <ThemeProvider theme={theme}>
+        <GlobalStyle />
+        <Component {...pageProps} />
+      </ThemeProvider>
     </>
-  )
-}
+  );
+};
 
-export default MyApp
+export default MyApp;
